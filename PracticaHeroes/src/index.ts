@@ -1,6 +1,6 @@
 import { listaHeroes } from "../src/Controlador/TLista";
 
-document.addEventListener("DOMContentLoaded", () => { 
+document.addEventListener("DOMContentLoaded", () => {
     const appContainer = document.getElementById("app-container");
 
     function renderView(): void {
@@ -45,6 +45,7 @@ function renderHeroesView(container: HTMLElement): void {
 function renderAgregarView(container: HTMLElement): void {
     container.innerHTML = `
         <form id="form-hero">
+            <input type="hidden" id="codigo" name="codigo">
             <label for="nombre">Nombre:</label>
             <input type="text" id="nombre" name="nombre">
             <label for="edad">Edad:</label>
@@ -58,26 +59,26 @@ function renderAgregarView(container: HTMLElement): void {
     `;
 
     const button = container.querySelector("#btn") as HTMLButtonElement;
-    button.addEventListener("click", (e) => saveHero(e));
+    button.addEventListener("click", saveHero);
 }
-
 
 function saveHero(e: Event): void {
     e.preventDefault();
 
+    const codigo = Number((document.getElementById("codigo") as HTMLInputElement).value);
     const nombre = (document.getElementById("nombre") as HTMLInputElement).value;
     const edad = Number((document.getElementById("edad") as HTMLInputElement).value);
     const ciudad = (document.getElementById("ciudad") as HTMLInputElement).value;
     const imagen = (document.getElementById("imagen") as HTMLInputElement).value;
 
-    const hash = window.location.hash;
-    if (hash === "#agregar") {
+    if (codigo) {
+        listaHeroes.editar(codigo, codigo, nombre, edad, ciudad, imagen);
+    } else {
         listaHeroes.insertar(nombre, edad, ciudad, imagen);
     }
 
     window.location.hash = "#heroes";
 }
-
 
 function renderEditarEliminarView(container: HTMLElement): void {
     container.innerHTML = "";
@@ -113,8 +114,7 @@ function renderEditarEliminarView(container: HTMLElement): void {
             }
         } else if (target.classList.contains("eliminar")) {
             listaHeroes.eliminar(codigo);
-            renderEditarEliminarView(container); 
+            renderEditarEliminarView(container);
         }
     });
 }
-
